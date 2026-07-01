@@ -5,10 +5,14 @@ export const kaminoConfig = registerAs('kamino', () => ({
   marketAddress: process.env.KAMINO_MARKET_ADDRESS || '7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF',
 }));
 
-export const jupiterConfig = registerAs('jupiter', () => ({
-  rpcEndpoint: process.env.RPC_ENDPOINT || 'https://solana-mainnet.infura.io/v3/18f7267d6c1544ecad55744dd50b6185',
-}));
-
 export const redisConfig = registerAs('redis', () => ({
   url: process.env.REDIS_URL || 'redis://localhost:6379',
+}));
+
+export const databaseConfig = registerAs('database', () => ({
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5432', 10),
+  username: process.env.DB_USERNAME || 'postgres',
+  password: process.env.DB_PASSWORD || 'postgres',
+  database: process.env.DB_DATABASE || 'solana_bridge',
 }));
