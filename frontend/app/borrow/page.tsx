@@ -1,6 +1,6 @@
 "use client"
 
-import { BorrowForm } from "@/components/login-form"
+import { BorrowForm } from "@/components/BorrowForm"
 import { GalleryVerticalEndIcon } from "lucide-react"
 
 export default function BorrowPage() {
