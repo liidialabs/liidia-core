@@ -73,7 +73,7 @@ export function SlideConfirm({ label, onConfirm, disabled }: SlideConfirmProps) 
       ref={trackRef}
       className={cn(
         "relative h-13 w-full rounded-xl overflow-hidden select-none",
-        "bg-[#17171D] border-[1.5px] border-[#22222A]",
+        "bg-[#EBEBF0] border-[1.5px] border-[#E4E4E8]",
         disabled && "opacity-35 pointer-events-none",
       )}
     >
@@ -86,7 +86,7 @@ export function SlideConfirm({ label, onConfirm, disabled }: SlideConfirmProps) 
         <span
           className={cn(
             "text-sm font-medium truncate transition-colors duration-150",
-            progress > 50 ? "text-white/90" : "text-white/30",
+            progress > 50 ? "text-white/90" : "text-[#6B6B7A] dark:text-[#5A5A6E]/30",
           )}
         >
           {label}
@@ -98,7 +98,7 @@ export function SlideConfirm({ label, onConfirm, disabled }: SlideConfirmProps) 
         onMouseDown={startDrag}
         onTouchStart={startDrag}
         className="absolute top-1/2 -translate-y-1/2 z-10 flex items-center justify-center
-                   size-10 rounded-full bg-[#5271FF] border-[3px] border-[#17171D]
+                   size-10 rounded-lg bg-[#5271FF] border-[3px] border-[#5271ff]
                    cursor-grab active:cursor-grabbing touch-none"
         style={{ left: thumbLeft }}
       >
