@@ -1,31 +1,35 @@
 export const KAMINO_MARKET = '7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF';
 
-export interface EarnVaultEntry {
-  kvault: string;
-  symbol: string;
-  name: string;
-  decimals: number;
-}
-
-export interface BorrowCollateralEntry {
+export interface Reserves {
   reserve: string;
   symbol: string;
-  name: string;
+  liquidityTokenMint: string;
   decimals: number;
 }
 
-export const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
-
-export const EARN_VAULTS: Record<string, EarnVaultEntry> = {
-  [USDC_MINT]: { kvault: 'TODO', symbol: 'USDC', name: 'USD Coin', decimals: 6 },
-};
-
-export const BORROW_COLLATERALS: Record<string, BorrowCollateralEntry> = {
-  'So11111111111111111111111111111111111111112': { reserve: 'TODO', symbol: 'SOL', name: 'Wrapped SOL', decimals: 9 },
-};
-
-export const USDC_RESERVE = 'TODO';
-
-export const EARN_VAULTS_ARRAY = Object.entries(EARN_VAULTS).map(([mint, entry]) => ({ mint, ...entry }));
-
-export const BORROW_COLLATERALS_ARRAY = Object.entries(BORROW_COLLATERALS).map(([mint, entry]) => ({ mint, ...entry }));
+export const BORROW_ASSETS: Record<string, Reserves> = {
+  "USDC" : {
+    reserve: "D6q6wuQSrifJKZYpR1M8R4YawnLDtDsMmWM1NbBmgJ59",
+    symbol: "USDC",
+    liquidityTokenMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    decimals: 6
+  },
+  "USDT" : {
+    reserve: "H3t6qZ1JkguCNTi9uzVKqQ7dvt2cum4XiXWom6Gn5e5S",
+    symbol: "USDT",
+    liquidityTokenMint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+    decimals: 6
+  },
+  "USDS" : {
+    reserve: "BHUi32TrEsfN2U821G4FprKrR4hTeK4LCWtA3BFetuqA",
+    symbol: "USDS",
+    liquidityTokenMint: "USDSwr9ApdHk5bvJKMjzff41FfuX8bSxdKcR81vTwcA",
+    decimals: 6
+  },
+  "USDG" : {
+    reserve: "ESCkPWKHmgNE7Msf77n9yzqJd5kQVWWGy3o5Mgxhvavp",
+    symbol: "USDG",
+    liquidityTokenMint: "2u1tszSeqZ3qBWF3uNGPFc8TzMk2tdiwknnRMWGWjGWH",
+    decimals: 6
+  },
+}
