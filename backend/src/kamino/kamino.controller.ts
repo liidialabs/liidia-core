@@ -1,8 +1,7 @@
 import { Controller, Post, Get, Param, Body } from '@nestjs/common';
 import { KaminoService } from './kamino.service';
 import { KaminoResolverService } from './kamino-resolver.service';
-import { EarnDto } from './dto/earn.dto';
-import { BorrowCollateralDto, BorrowUsdcDto } from './dto/borrow.dto';
+import { BorrowDto } from './dto/borrow.dto';
 
 @Controller('kamino')
 export class KaminoController {
@@ -11,50 +10,16 @@ export class KaminoController {
     private readonly resolver: KaminoResolverService,
   ) {}
 
-  @Get('earn/deposit/tokens')
-  getEarnDepositTokens() {
-    return this.resolver.getEarnDepositTokens();
-  }
-
-  @Post('earn/deposit')
-  async earnDeposit(@Body() dto: EarnDto) {
-    const kvault = this.resolver.resolveEarnVault(dto.supplyMint);
-    return this.kaminoService.buildEarnDeposit(dto.wallet, kvault, dto.amount);
-  }
-
-  @Post('earn/withdraw')
-  async earnWithdraw(@Body() dto: EarnDto) {
-    const kvault = this.resolver.resolveEarnVault(dto.supplyMint);
-    return this.kaminoService.buildEarnWithdraw(dto.wallet, kvault, dto.amount);
-  }
-
-  @Get('borrow/collateral/tokens')
-  getBorrowCollateralTokens() {
-    return this.resolver.getBorrowCollateralTokens();
-  }
-
-  @Post('borrow/deposit')
-  async borrowDeposit(@Body() dto: BorrowCollateralDto) {
-    const { reserve, market } = this.resolver.resolveCollateralReserve(dto.supplyMint);
-    return this.kaminoService.buildBorrowDeposit(dto.wallet, market, reserve, dto.amount);
-  }
-
   @Post('borrow/borrow')
-  async borrow(@Body() dto: BorrowUsdcDto) {
-    const { reserve, market } = this.resolver.getUsdcReserve();
+  async borrow(@Body() dto: BorrowDto) {
+    const { reserve, market } = this.resolver.resolveBorrowReserve(dto.supplyMint);
     return this.kaminoService.buildBorrow(dto.wallet, market, reserve, dto.amount);
   }
 
   @Post('borrow/repay')
-  async repay(@Body() dto: BorrowUsdcDto) {
-    const { reserve, market } = this.resolver.getUsdcReserve();
+  async repay(@Body() dto: BorrowDto) {
+    const { reserve, market } = this.resolver.resolveBorrowReserve(dto.supplyMint);
     return this.kaminoService.buildRepay(dto.wallet, market, reserve, dto.amount);
-  }
-
-  @Post('borrow/withdraw')
-  async withdraw(@Body() dto: BorrowCollateralDto) {
-    const { reserve, market } = this.resolver.resolveCollateralReserve(dto.supplyMint);
-    return this.kaminoService.buildWithdraw(dto.wallet, market, reserve, dto.amount);
   }
 
   @Get('market/:address')
@@ -67,19 +32,14 @@ export class KaminoController {
     return this.kaminoService.getUserObligations(market, user);
   }
 
+  @Get('rates')
+  async getBorrowRates() {
+    return this.kaminoService.getBorrowRates();
+  }
+
   @Get('reserves')
   getReserves() {
     return this.resolver.getReserves();
-  }
-
-  @Get('earn/vaults')
-  async getEarnVaults() {
-    return this.kaminoService.getEarnVaults();
-  }
-
-  @Get('earn/positions/:wallet')
-  async getUserVaultPositions(@Param('wallet') wallet: string) {
-    return this.kaminoService.getUserVaultPositions(wallet);
   }
 
   @Get('reserves/metrics/:market')
