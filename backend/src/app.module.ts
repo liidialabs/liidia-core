@@ -3,17 +3,23 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { KaminoModule } from './kamino/kamino.module';
-import { JupiterLendModule } from './jupiter-lend/jupiter-lend.module';
-import { kaminoConfig, jupiterConfig } from './config/configuration';
+import { RecipientModule } from './recipient/recipient.module';
+import { CountriesModule } from './countries/countries.module';
+import { FxRatesModule } from './fx-rates/fx-rates.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { kaminoConfig, redisConfig, databaseConfig } from './config/configuration';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [kaminoConfig, jupiterConfig],
+      load: [kaminoConfig, redisConfig, databaseConfig],
     }),
+    PrismaModule,
     KaminoModule,
-    JupiterLendModule,
+    RecipientModule,
+    CountriesModule,
+    FxRatesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
