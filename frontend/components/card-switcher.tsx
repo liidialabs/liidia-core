@@ -1,55 +1,42 @@
 "use client"
 
-import { useState } from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { CreditCard } from "./credit-card/credit-card"
+import type { BorrowToken } from "@/lib/api"
 
-const CARDS = [
-  { type: "gray-dark" as const, company: "kamino", logoSrc: "/kamino.png" },
-  { type: "green" as const, company: "jupiter lend", logoSrc: "/jupiter-lend.png" },
-] as const
+interface CardSwitcherProps {
+  borrowToken: BorrowToken
+  onCycleToken: () => void
+  borrowableAmount: number
+  rates: Record<string, { borrowApy: number }>
+}
 
 const CARD_W = 320
 
-export function CardSwitcher() {
-  const [index, setIndex] = useState(0)
-
-  const prev = () => setIndex((i) => (i - 1 + CARDS.length) % CARDS.length)
-  const next = () => setIndex((i) => (i + 1) % CARDS.length)
+export function CardSwitcher({ borrowToken, onCycleToken, borrowableAmount, rates }: CardSwitcherProps) {
+  const apr = rates[borrowToken.symbol]?.borrowApy
+  const rateDisplay = apr != null ? `${(apr * 100).toFixed(2)}%` : "—"
 
   return (
     <div className="flex items-center justify-center gap-1">
-      <button
-        onClick={prev}
-        className="flex items-center justify-center size-6 shrink-0 rounded-full bg-[#F4F4F6] border border-[#E4E4E8]
-                   text-[#8A8A92] hover:scale-105 cursor-pointer transition-all"
-        aria-label="Previous card"
-      >
-        <ChevronLeft className="size-3" />
-      </button>
-
       <div className="relative overflow-hidden rounded-2xl" style={{ width: CARD_W, height: Math.round(CARD_W * 190 / 316) }}>
-        <div
-          className="flex transition-transform duration-300 ease-in-out"
-          style={{ transform: `translateX(${-index * CARD_W}px)` }}
+        <button
+          onClick={onCycleToken}
+          className="block w-full h-full cursor-pointer text-left"
+          aria-label="Cycle borrow token"
+          type="button"
         >
-          {CARDS.map((card) => (
-            <div key={card.type} className="flex-shrink-0" style={{ width: CARD_W }}>
-              <CreditCard type={card.type} width={CARD_W} company={card.company} logoSrc={card.logoSrc} />
-            </div>
-          ))}
-        </div>
+          <CreditCard
+            type="gray-dark"
+            width={CARD_W}
+            company="kamino"
+            logoSrc="/kamino.png"
+            borrowToken={borrowToken}
+            rate={rateDisplay}
+            availableAmountUsd={borrowableAmount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          />
+        </button>
       </div>
-
-      <button
-        onClick={next}
-        className="flex items-center justify-center size-6 shrink-0 rounded-full bg-[#F4F4F6] border border-[#E4E4E8]
-                   text-[#8A8A92] hover:scale-105 cursor-pointer transition-all"
-        aria-label="Next card"
-      >
-        <ChevronRight className="size-3" />
-      </button>
     </div>
   )
 }
