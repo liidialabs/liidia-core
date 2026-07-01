@@ -1,0 +1,23 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Recipient {
+  id            String   @id @default(uuid())
+  walletAddress String   @map("wallet_address")
+  type          String
+  phoneNumber   String?  @map("phone_number")
+  cryptoAddress String?  @map("crypto_address")
+  countryCode   String?  @map("country_code")
+  provider      String
+  label         String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([walletAddress])
+  @@map("recipients")
+}
