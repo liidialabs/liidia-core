@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import { cx, sortCx } from "@/lib/utils";
-import { SolanaIcon, PaypassIcon } from "./icons";
+import { cx, cn, sortCx } from "@/lib/utils";
+import { SolanaIcon } from "./icons";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import type { BorrowToken } from '../../lib/api'
 
 const styles = sortCx({
     // Normal
@@ -117,16 +119,41 @@ const VERTICAL_STRIP_TYPES = ["gray-strip-vertical", "gradient-strip-vertical", 
 
 type CreditCardType = (typeof _NORMAL_TYPES)[number] | (typeof STRIP_TYPES)[number] | (typeof VERTICAL_STRIP_TYPES)[number];
 
+
+
+const TOKEN_COLORS: Record<string, string> = {
+  USDC: '#2775CA',
+  USDT: '#26A17B',
+  USDS: '#1A1A1A',
+  USDG: '#2D8CF0',
+};
+
+function TokenIcon({ symbol, className }: { symbol: string; className?: string }) {
+  const bg = TOKEN_COLORS[symbol] ?? '#6366F1';
+  const initials = symbol.slice(0, 2);
+  return (
+    <div
+      className={cn("flex items-center justify-center rounded-full text-[8px] font-bold text-white shrink-0", className)}
+      style={{ background: bg }}
+    >
+      {initials}
+    </div>
+  );
+}
+
 interface CreditCardProps {
     company?: string;
-    cardNumber?: string;
-    cardHolder?: string;
-    cardExpiration?: string;
+    availableAmountUsd?: string;
     type?: CreditCardType;
     className?: string;
     width?: number;
     logoSrc?: string;
+    borrowToken: BorrowToken;
+    rate: string
 }
+
+const sliceAddress = (address: string) =>
+  `${address.slice(0, 6)}......${address.slice(-6)}`
 
 const calculateScale = (desiredWidth: number, originalWidth: number, originalHeight: number) => {
     // Calculate the scale factor
@@ -145,16 +172,19 @@ const calculateScale = (desiredWidth: number, originalWidth: number, originalHei
 
 export const CreditCard = ({
     company = "Untitled.",
-    cardNumber = "1234 1234 1234 1234",
-    cardHolder = "OLIVIA RHYE",
-    cardExpiration = "06/28",
+    availableAmountUsd = "0.00",
     type = "brand-dark",
     className,
     width,
     logoSrc,
+    borrowToken,
+    rate,
 }: CreditCardProps) => {
     const originalWidth = 316;
     const originalHeight = 190;
+
+    const { primaryWallet } = useDynamicContext();
+    const connectedUser = primaryWallet ? primaryWallet?.address as string : '000000000000000000000000000000000000000000000000000000'
 
     const { scale, scaledWidth, scaledHeight } = useMemo(() => {
         if (!width)
@@ -207,31 +237,50 @@ export const CreditCard = ({
                         <span className="text-md leading-[normal] font-semibold">{company}</span>
                     </div>
 
-                    <PaypassIcon className={styles[type].paypassIcon} />
+                    {/* <img src="/liidia-transp.png" alt="" className="h-10" /> */}
                 </div>
 
                 <div className="relative flex items-end justify-between gap-3">
-                    <div className="flex min-w-0 flex-col gap-2">
-                        <div className="flex items-end gap-1">
+                    <div className="flex min-w-0 flex-col gap-1">
+                        <div className="flex items-center gap-1.5">
+                            <TokenIcon symbol={borrowToken.symbol} className="size-4" />
+                            <p
+                                style={{
+                                    wordBreak: "break-word",
+                                }}
+                                className={cx("my-0 text-xs leading-snug font-semibold tracking-[0.6px] uppercase", styles[type].footerText)}
+                            >
+                                {borrowToken?.name}
+                            </p>
+                            <p
+                                style={{
+                                    wordBreak: "break-word",
+                                }}
+                                className={cx("my-0 text-xs leading-snug font-semibold tracking-[0.6px] uppercase font-mono", styles[type].footerText)}
+                            >
+                                {rate}
+                            </p>
+                        </div>
+                        <div className="flex items-center justify-between">
                             <p
                                 style={{
                                     wordBreak: "break-word",
                                 }}
                                 className={cx("text-xs leading-snug font-semibold tracking-[0.6px] uppercase", styles[type].footerText)}
                             >
-                                {cardHolder}
+                                Available:
                             </p>
                             <p
                                 className={cx(
-                                    "ml-auto text-right text-xs leading-[normal] font-semibold tracking-[0.6px] tabular-nums",
+                                    "text-right text-xs leading-[normal] font-semibold tracking-[0.6px] tabular-nums font-mono",
                                     styles[type].footerText,
                                 )}
                             >
-                                {cardExpiration}
+                                ${availableAmountUsd}
                             </p>
                         </div>
-                        <div className={cx("text-md leading-[normal] font-semibold tracking-[1px] tabular-nums", styles[type].footerText)}>
-                            {cardNumber}
+                        <div className={cx("text-md leading-[normal] font-semibold tracking-[1px] tabular-nums font-mono", styles[type].footerText)}>
+                            {sliceAddress(connectedUser)}
 
                             {/* This is just a placeholder to always keep the space for card number even if there's no card number yet. */}
                             <span className="pointer-events-none invisible inline-block w-0 max-w-0 opacity-0">1</span>
